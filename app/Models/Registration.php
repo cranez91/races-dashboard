@@ -24,7 +24,7 @@ class Registration extends Model
     public function scopeFilter($query, array $filters)
     {
         return $query
-            ->when($filters['race_id'] ?? null, fn($q, $raceId) =>
+            ->when($filters['race'] ?? null, fn($q, $raceId) =>
                 $q->where('race_id', $raceId)
             )
             ->when($filters['gender'] ?? null, fn($q, $gender) =>
