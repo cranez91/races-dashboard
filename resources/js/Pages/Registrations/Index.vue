@@ -7,6 +7,7 @@
     <!-- Filters -->
     <div class="flex space-x-4 mb-6">
       <select class="border rounded p-2"
+              id="lstRaces"
               v-model="raceId">
         <option value="">All Races</option>
         <option :key="race.id"
@@ -17,6 +18,7 @@
       </select>
 
       <select class="border rounded p-2"
+              id="lstCategories"
               v-model="categoryId">
         <option value="">All Categories</option>
         <option :key="category.id"
@@ -80,6 +82,7 @@
           <!-- Inline editable notes -->
           <td class="border p-2">
             <input class="border rounded p-1 w-full"
+                   id="txtNotes"
                    v-model="reg.notes"
                    @focus="setOriginalValues(reg)"
                    @blur="checkAndUpdate(reg)"/>
@@ -113,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { router } from "@inertiajs/vue3";
 import { useRegistrationsStore } from '../../stores/registrations';
 import Swal from 'sweetalert2';
@@ -198,10 +201,44 @@ const update = async (reg: any) => {
   }
 };
 
-
 const goToPage = (url: string | null) => {
   if (!url) return;
   router.get(url, {}, { preserveState: true, replace: true });
 };
 
+// ⌨️ Keyboard shortcuts
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.ctrlKey && e.key === "r") {
+    // Ctrl+F -> focus race filter
+    e.preventDefault();
+    const el = document.querySelector("#lstRaces") as HTMLSelectElement;
+    el?.focus();
+  }
+  if (e.ctrlKey && e.key === "c") {
+    // Ctrl+F -> focus race filter
+    e.preventDefault();
+    const el = document.querySelector("#lstCategories") as HTMLSelectElement;
+    el?.focus();
+  }
+  if (e.ctrlKey && e.key === "ArrowLeft") {
+    // Ctrl+P -> Go to previous page
+    e.preventDefault();
+    const prev = props.registrations.links.find((l: any) => l.label.includes("Previous"));
+    if (prev?.url) goToPage(prev.url);
+  }
+  if (e.ctrlKey && e.key === "ArrowRight") {
+    // Ctrl+→ -> Go to next page
+    e.preventDefault();
+    const next = props.registrations.links.find((l: any) => l.label.includes("Next"));
+    if (next?.url) goToPage(next.url);
+  }
+};
+
+onMounted(() => {
+  window.addEventListener("keydown", handleKeydown);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", handleKeydown);
+});
 </script>
