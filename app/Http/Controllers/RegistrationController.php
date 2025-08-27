@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Registration;
 use App\Models\Race;
+use App\Http\Requests\UpdateRegistrationRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Inertia\Inertia;
@@ -35,7 +37,7 @@ class RegistrationController extends Controller
         $registrations = $this->getRegistrations($filters);
 
         return Inertia::render('Registrations/Index', [
-            'registrations' => $registrations,
+            'registrations' => $registrations->toArray(),
             'filters' => $filters,
             'races' => Race::all(['id', 'name']),
             'categories' => $categories
@@ -58,9 +60,37 @@ class RegistrationController extends Controller
     {
         return Registration::query()
             ->with(['participant', 'race'])
+            ->select('id', 'race_id', 'participant_id', 'category', 'notes')
             ->filter($filters)
             ->orderByDesc('id')
             ->paginate(10)
             ->withQueryString();
+    }
+
+    /**
+     * Update the specified registration and participant's name.
+     *
+     * This method handles the update of a registration record and the associated participant's name
+     * based on the validated input from the UpdateRegistrationRequest. It retrieves the necessary data,
+     * updates the registration and then updates the participant's name accordingly.
+     *
+     * @param UpdateRegistrationRequest $request The request containing the validated data for the update.
+     * @param Registration $registration The registration instance to be updated.
+     * 
+     * @return JsonResponse A JSON response indicating the success of the operation and the updated registration.
+     */
+    public function update(UpdateRegistrationRequest $request, Registration $registration): JsonResponse
+    {
+        // Retrieve a portion of the validated input data...
+        $participant_data = $request->safe()->only(['participant_name']);
+        $registration_data = $request->safe()->except(['participant_name']);
+        
+        $registration->update($registration_data);
+        $registration->participant->update(['name' => $participant_data['participant_name']]);
+
+        return response()->json([
+            'success' => true,
+            'registration' => $registration,
+        ]);
     }
 }
