@@ -19,4 +19,4 @@ Route::get('/', function () {
 });
 
 Route::get('/registrations', [RegistrationController::class, 'index'])->name('registrations.index');
-
+Route::patch('/registrations/{registration}', [RegistrationController::class, 'update'])->name('registrations.update');

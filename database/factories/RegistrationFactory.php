@@ -22,6 +22,7 @@ class RegistrationFactory extends Factory
             'participant_id' => Participant::factory(),
             'race_id' => Race::factory(),
             'category' => $this->faker->randomElement(['general', 'master']),
+            'notes' => $this->faker->sentence(),
         ];
     }
 }
