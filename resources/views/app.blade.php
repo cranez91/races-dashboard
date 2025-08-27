@@ -8,10 +8,10 @@
         <title inertia>
             {{ config('app.name', 'Laravel') }}
         </title>
-        <link rel="stylesheet"
-              href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+        <!--link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"-->
 
-        @vite('resources/js/app.js')
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
         @inertiaHead
     </head>
     <body class="antialiased">
