@@ -121,6 +121,7 @@ import Swal from 'sweetalert2';
 import AppLayout from '../../layouts/AppLayout.vue';
 import type {
   RegistrationsPagination,
+  Registration,
   Filters,
   Race,
   Category
@@ -159,12 +160,12 @@ watch(
   { immediate: true }
 );
 
-const setOriginalValues = (reg: any) => {
+const setOriginalValues = (reg: Registration) => {
   reg._originalParticipantName = reg.participant.name;
   reg._originalNotes = reg.notes;
 };
 
-const checkAndUpdate = (reg: any) => {
+const checkAndUpdate = (reg: Registration) => {
   const changedName = reg.participant.name !== reg._originalParticipantName;
   const changedNotes = reg.notes !== reg._originalNotes;
   if (changedName || changedNotes) {
@@ -173,7 +174,7 @@ const checkAndUpdate = (reg: any) => {
 };
 
 // Update a registration with optimistic UI
-const update = async (reg: any) => {
+const update = async (reg: Registration) => {
   try {
     await registrationsStore.updateRegistration(reg.id, {
       category: reg.category,
@@ -182,7 +183,6 @@ const update = async (reg: any) => {
       notes: reg.notes,
     });
 
-    // Si el update fue exitoso
     Swal.fire({
       icon: 'success',
       title: 'Updated!',
@@ -191,7 +191,6 @@ const update = async (reg: any) => {
       allowOutsideClick: false
     });
   } catch (error) {
-    // En caso de error
     Swal.fire({
       icon: 'error',
       title: 'Oops...',
